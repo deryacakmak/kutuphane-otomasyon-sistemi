@@ -1,4 +1,4 @@
-package com.k.t.phane_otomasyon.kutuphane_otomasyonsistemi;
+package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

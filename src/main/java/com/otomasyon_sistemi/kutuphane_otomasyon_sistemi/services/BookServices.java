@@ -1,10 +1,8 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Publisher;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteBookDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.PublisherRepository;
@@ -53,5 +51,16 @@ public class BookServices {
             bookInfo.setPublisher(publisher2.get());
         }
         return bookInfo;
+    }
+
+    public Book getBookDelete(DeleteBookDto deleteBookDto) {
+        Optional<BookInfo> bookInfo = bookInfoRepository.findByISBN(deleteBookDto.getIsbn());
+        if (bookInfo.isPresent()) {
+            Book book = bookInfo.get().getBook();
+            bookInfoRepository.delete(bookInfo.get());
+            return book;
+        } else {
+            return null;
+        }
     }
 }

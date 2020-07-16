@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 
 @Entity
-@Table
+@Table(name = "user")
 public class User {
 
     @Id
@@ -32,6 +32,8 @@ public class User {
 
     @Column
     private Long userIdentifier;
+
+    public User() {}
 
     public User(Long id, String firstName, String lastName, String email, String userType, String password, Long userIdentifier) {
         this.id = id;

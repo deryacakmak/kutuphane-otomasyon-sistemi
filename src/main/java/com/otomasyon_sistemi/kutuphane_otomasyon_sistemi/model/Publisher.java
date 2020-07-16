@@ -4,7 +4,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model;
 import javax.persistence.*;
 
 @Entity
-@Table
+@Table(name = "publisher")
 public class Publisher {
 
     @Id

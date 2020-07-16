@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table
+@Table(name = "book_info")
 public class BookInfo {
 
     @Id
@@ -24,12 +24,10 @@ public class BookInfo {
     @Column
     private Date publicationDate;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="book_ıd")
+    @OneToOne
     private Book book;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="publisherId")
+    @OneToOne
     private Publisher publisher;
 
     public BookInfo() {}

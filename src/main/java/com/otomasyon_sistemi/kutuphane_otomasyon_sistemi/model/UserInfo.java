@@ -4,15 +4,14 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model;
 import javax.persistence.*;
 
 @Entity
-@Table
+@Table(name = "user_info")
 public class UserInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="user_id")
+    @OneToOne
     private User user;
 
     @Column

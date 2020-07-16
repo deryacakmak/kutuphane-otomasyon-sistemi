@@ -5,9 +5,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table
+@Table(name = "announcements")
 public class Announcement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,23 +15,24 @@ public class Announcement {
     private String title;
 
     @Column
-    private String context;
+    private String content;
 
     @Column
     private Date publishingDate;
 
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="user_id")
+    @OneToOne
     private User publisher;
 
-    public Announcement(String title, String context, Date publishingDate) {
 
+    public Announcement() {}
+
+    public Announcement(Long id, String title, String content, Date publishingDate, User publisher) {
+        this.id = id;
         this.title = title;
-        this.context = context;
+        this.content = content;
         this.publishingDate = publishingDate;
+        this.publisher = publisher;
     }
-    public Announcement(){}
 
     public Long getId() {
         return id;
@@ -50,12 +50,12 @@ public class Announcement {
         this.title = title;
     }
 
-    public String getContext() {
-        return context;
+    public String getContent() {
+        return content;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getPublishingDate() {
@@ -74,3 +74,4 @@ public class Announcement {
         this.publisher = publisher;
     }
 }
+

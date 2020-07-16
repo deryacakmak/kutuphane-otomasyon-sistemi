@@ -6,18 +6,19 @@ public class AddBookDto {
     private String name;
     private String author;
     private String location;
-    private Long ISBN;
+    private Long isbn;
     private Long stock;
     private Date publicationDate;
     private String category;
     private String publisher;
+
     public AddBookDto(){}
 
     public AddBookDto(String name, String author, String location, Long ISBN, Long stock, Date publicationDate, String category, String publisher) {
         this.name = name;
         this.author = author;
         this.location = location;
-        this.ISBN = ISBN;
+        this.isbn = ISBN;
         this.stock = stock;
         this.publicationDate = publicationDate;
         this.category = category;
@@ -65,11 +66,11 @@ public class AddBookDto {
     }
 
     public Long getISBN() {
-        return ISBN;
+        return isbn;
     }
 
     public void setISBN(Long ISBN) {
-        this.ISBN = ISBN;
+        this.isbn = ISBN;
     }
 
     public Long getStock() {

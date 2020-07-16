@@ -25,7 +25,9 @@ public class BookServices {
     @Autowired
     private BookInfoRepository bookInfoRepository;
 
-    public BookInfo bookAdd(AddBookDto addBookDto){
+
+
+    public BookInfo getBookAdd(AddBookDto addBookDto){
         Book book = new Book();
         book.setAuthor(addBookDto.getAuthor());
         book.setCategory(addBookDto.getCategory());
@@ -38,12 +40,18 @@ public class BookServices {
         bookInfo.setISBN(addBookDto.getISBN());
         bookInfo.setPublicationDate(addBookDto.getPublicationDate());
         Optional<Publisher> publisher = publisherRepository.findByName(addBookDto.getPublisher());
+        bookInfo.setBook(book);
         if(publisher.isPresent()){
-                bookInfo.setBook(book);
-                return bookInfo;
+                bookInfo.setPublisher(publisher.get());
+
         }
         else{
-            return null;
+            Publisher addPublisher = new Publisher();
+            addPublisher.setName(addBookDto.getPublisher());
+            publisherRepository.saveAndFlush(addPublisher);
+            Optional<Publisher> publisher2 = publisherRepository.findByName(addBookDto.getPublisher());
+            bookInfo.setPublisher(publisher2.get());
         }
+        return bookInfo;
     }
 }

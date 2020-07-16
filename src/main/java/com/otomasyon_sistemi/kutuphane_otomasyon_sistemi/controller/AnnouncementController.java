@@ -4,9 +4,7 @@ import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddAnnouncementDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteAnnouncementDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Announcement;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.AnnouncementRepository;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services.AnnouncementServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+
 import java.util.Optional;
 
 

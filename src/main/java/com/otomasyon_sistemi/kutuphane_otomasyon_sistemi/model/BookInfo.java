@@ -1,6 +1,8 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -22,6 +24,7 @@ public class BookInfo {
     private Long borrowingNumber;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date publicationDate;
 
     @OneToOne

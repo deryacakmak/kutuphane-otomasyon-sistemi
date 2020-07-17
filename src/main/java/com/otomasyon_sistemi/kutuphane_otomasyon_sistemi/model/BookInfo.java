@@ -30,13 +30,13 @@ public class BookInfo {
     @OneToOne
     private Book book;
 
-    @OneToOne
-    private Publisher publisher;
+    @Column
+    private String publisher;
 
     public BookInfo() {}
 
 
-    public BookInfo(Long id, Long ISBN, Long stock, Long borrowingNumber, Date publicationDate, Book book, Publisher publisher) {
+    public BookInfo(Long id, Long ISBN, Long stock, Long borrowingNumber, Date publicationDate, Book book, String publisher) {
         this.id = id;
         this.ISBN = ISBN;
         this.stock = stock;
@@ -94,11 +94,11 @@ public class BookInfo {
         this.book = book;
     }
 
-    public Publisher getPublisher() {
+    public String getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(Publisher publisher) {
+    public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 }

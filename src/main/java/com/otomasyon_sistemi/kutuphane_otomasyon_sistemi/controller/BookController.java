@@ -4,6 +4,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteAnnouncementDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteBookDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.IncreaseStockDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
@@ -50,5 +51,12 @@ public class BookController {
         else{
             throw new BadRequestException("There is no book with this id");
         }
+    }
+
+    @PostMapping("/increaseStock")
+    public ResponseEntity<Response> increaseStockNumber(@RequestBody IncreaseStockDto increaseStockDto){
+        bookServices.increaseBookStock(increaseStockDto);
+        Response response = new Response("Book deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

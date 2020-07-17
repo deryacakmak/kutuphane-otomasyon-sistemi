@@ -2,20 +2,23 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteBookDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.IncreaseStockDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookRepository;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.PublisherRepository;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BookServices {
 
-    @Autowired
-    private PublisherRepository publisherRepository;
+
 
     @Autowired
     private BookRepository bookRepository;
@@ -36,31 +39,41 @@ public class BookServices {
         bookInfo.setBorrowingNumber(addBookDto.getStock());
         bookInfo.setStock(addBookDto.getStock());
         bookInfo.setISBN(addBookDto.getISBN());
+        bookInfo.setPublisher(addBookDto.getPublisher());
         bookInfo.setPublicationDate(addBookDto.getPublicationDate());
-        Optional<Publisher> publisher = publisherRepository.findByName(addBookDto.getPublisher());
         bookInfo.setBook(book);
-        if(publisher.isPresent()){
-                bookInfo.setPublisher(publisher.get());
-
-        }
-        else{
-            Publisher addPublisher = new Publisher();
-            addPublisher.setName(addBookDto.getPublisher());
-            publisherRepository.saveAndFlush(addPublisher);
-            Optional<Publisher> publisher2 = publisherRepository.findByName(addBookDto.getPublisher());
-            bookInfo.setPublisher(publisher2.get());
-        }
         return bookInfo;
     }
 
     public Book getBookDelete(DeleteBookDto deleteBookDto) {
-        Optional<BookInfo> bookInfo = bookInfoRepository.findByISBN(deleteBookDto.getIsbn());
-        if (bookInfo.isPresent()) {
-            Book book = bookInfo.get().getBook();
-            bookInfoRepository.delete(bookInfo.get());
-            return book;
-        } else {
-            return null;
+        List<BookInfo> books = bookInfoRepository.findByISBN(deleteBookDto.getIsbn());
+        if(!(books.isEmpty())){
+            for(BookInfo book: books){
+                if(book.getPublicationDate().getYear() == (deleteBookDto.getPublicationDate().getYear())){
+                    Book deletedBook = book.getBook();
+                    System.out.println(book.getBook().getId());
+                    bookInfoRepository.delete(book);
+                    return deletedBook;
+                }
+            }
+        }
+        return null;
+
+    }
+
+    public void increaseBookStock(IncreaseStockDto increaseStockDto) {
+        List<BookInfo> books = bookInfoRepository.findByISBN(increaseStockDto.getIsbn());
+        if (!(books.isEmpty())) {
+            for (BookInfo book : books) {
+                if (book.getPublicationDate().getYear() == (increaseStockDto.getPublicationYear().getYear())) {
+                        book.setStock(book.getStock()+increaseStockDto.getStockNumber());
+                        bookInfoRepository.save(book);
+
+                        return;
+                }
+            }
+
         }
     }
+
 }

@@ -3,6 +3,8 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.MemberDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BorrowingInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.UserInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services.MemberService;
@@ -39,7 +41,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserInfo> getAMember(@PathVariable Long id) {
+    public ResponseEntity<UserInfo> getMember(@PathVariable Long id) {
         Optional<UserInfo> member = userInfoRepository.findByUserId(id);
         if(member.isPresent()) {
             return new ResponseEntity<>(member.get(), HttpStatus.OK);
@@ -47,4 +49,11 @@ public class MemberController {
             throw new BadRequestException("There is no member with this id");
         }
     }
+    @GetMapping("/borrowed/{id}/{page}")
+    public ResponseEntity<List<BorrowingInfo>> getBorrowedBooks(@PathVariable Long id, @PathVariable int page){
+
+        List<BorrowingInfo> books = memberService.getBorrowedBook(id,page);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
 }

@@ -17,7 +17,7 @@ public interface BookInfoRepository extends JpaRepository<BookInfo, Long>, Pagin
     Page<BookInfo> findAllByISBN(String isbn,Pageable pageable);
     Page<BookInfo> findAllByBookNameAndBookAuthor(String name, String author, Pageable pageable);
     Page<BookInfo> findAllByBookNameOrBookAuthor(String name, String author, Pageable pageable);
-
+    Optional<BookInfo> findById(Long id);
 
 
 

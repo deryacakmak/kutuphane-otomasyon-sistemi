@@ -17,7 +17,7 @@ public class BorrowingInfo {
     private User user;
 
     @OneToOne
-    private Book book;
+    private BookInfo bookInfo;
 
     @Column
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -30,16 +30,21 @@ public class BorrowingInfo {
     @Column
     private boolean returnSituation;
 
-    public BorrowingInfo(Long id, User user, Book book, Date borrowingDate, Date returnDate, boolean returnSituation) {
+    @Column
+    private boolean isExtendDate;
+
+
+    public BorrowingInfo() {}
+
+    public BorrowingInfo(Long id, User user, BookInfo book, Date borrowingDate, Date returnDate, boolean returnSituation, boolean isExtendDate) {
         this.id = id;
         this.user = user;
-        this.book = book;
+        this.bookInfo = book;
         this.borrowingDate = borrowingDate;
         this.returnDate = returnDate;
         this.returnSituation = returnSituation;
+        this.isExtendDate = isExtendDate;
     }
-
-    public BorrowingInfo() {}
 
     public Long getId() {
         return id;
@@ -57,12 +62,12 @@ public class BorrowingInfo {
         this.user = user;
     }
 
-    public Book getBook() {
-        return book;
+    public BookInfo getBookInfo() {
+        return bookInfo;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBookInfo(BookInfo book) {
+        this.bookInfo = book;
     }
 
     public Date getBorrowingDate() {
@@ -87,5 +92,13 @@ public class BorrowingInfo {
 
     public void setReturnSituation(boolean returnSituation) {
         this.returnSituation = returnSituation;
+    }
+
+    public boolean isExtendDate() {
+        return isExtendDate;
+    }
+
+    public void setExtendDate(boolean extendDate) {
+        isExtendDate = extendDate;
     }
 }

@@ -2,9 +2,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DenemeDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Announcement;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/book")
@@ -57,11 +54,5 @@ public class BookController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Book>> getAllAnnouncements(DenemeDto denemeDto) {
-        System.out.println(denemeDto.getAuthor()+denemeDto.getAuthor());
-        List<Book> announcements = bookRepository.findAllByAuthorOrName(null,"Kaşağı33");
-        return new ResponseEntity<>(announcements,HttpStatus.OK);
-    }
 
 }

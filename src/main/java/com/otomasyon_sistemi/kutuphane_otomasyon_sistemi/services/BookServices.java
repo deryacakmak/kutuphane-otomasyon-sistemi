@@ -7,7 +7,14 @@ import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +97,19 @@ public class BookServices {
         }
     }
 
+    public List<BookInfo> getSearchedBook(SearchDto searchDto, int page){
+        Pageable pageable = PageRequest.of(page, 2);
+       if(searchDto.getIsbn() != null){
+           return bookInfoRepository.findAllByISBN(searchDto.getIsbn(),pageable).toList();
+       }
+       else if(searchDto.getAuthor() != null && searchDto.getName() != null){
+           return bookInfoRepository.findAllByBookNameAndBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable).toList();
+       }
+       else{
+           return bookInfoRepository.findAllByBookNameOrBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable).toList();
+       }
 
+    }
 
     }
 

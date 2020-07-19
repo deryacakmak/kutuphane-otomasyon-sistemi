@@ -7,14 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 
-public interface BookRepository extends JpaRepository<Book, Long>, PagingAndSortingRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, Long> {
 
     void delete(Book book);
-    List<Book> findAllByAuthorOrName(String author , String  name);
-   /* List<Book> findAllByName(String name , Pageable pageable);
-    List<Book> findAllByCategory(String category , Pageable pageable);*/
 
 
 

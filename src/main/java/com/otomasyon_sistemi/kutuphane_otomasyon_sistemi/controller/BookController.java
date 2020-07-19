@@ -2,7 +2,9 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/book")
@@ -54,5 +57,24 @@ public class BookController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/search/{page}")
+    public ResponseEntity<List<BookInfo>> getAllBooks(@PathVariable ("page") int page, @RequestBody SearchDto searchDto){
+        List<BookInfo> books = bookServices.getSearchedBook(searchDto,page);
+        if(!(books.isEmpty())){
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }else{
+            throw new BadRequestException("No book is found");
+    }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookInfo> getBook(@PathVariable Long id) {
+        Optional<BookInfo> book = bookInfoRepository.findByBookId(id);
+        if(book.isPresent()) {
+            return new ResponseEntity<>(book.get(), HttpStatus.OK);
+        }else{
+            throw new BadRequestException("There is no book with this id");
+        }
+    }
 
 }

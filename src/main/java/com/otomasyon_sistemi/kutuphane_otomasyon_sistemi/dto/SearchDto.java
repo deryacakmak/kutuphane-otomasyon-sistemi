@@ -6,19 +6,13 @@ public class SearchDto {
     private String name;
     private String author;
     private String isbn;
-    private Date publicationDate;
-    private String category;
-    private String publisher;
 
     public SearchDto(){}
 
-    public SearchDto(String name, String author, String isbn, Date publicationDate, String category, String publisher) {
+    public SearchDto(String name, String author, String isbn) {
         this.name = name;
         this.author = author;
         this.isbn = isbn;
-        this.publicationDate = publicationDate;
-        this.category = category;
-        this.publisher = publisher;
     }
 
     public String getName() {
@@ -43,30 +37,6 @@ public class SearchDto {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
-    }
-
-    public Date getPublicationDate() {
-        return publicationDate;
-    }
-
-    public void setPublicationDate(Date publicationDate) {
-        this.publicationDate = publicationDate;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
     }
 }
 

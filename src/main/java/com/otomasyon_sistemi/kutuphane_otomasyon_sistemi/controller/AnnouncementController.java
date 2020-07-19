@@ -7,6 +7,7 @@ import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.Announcement
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services.AnnouncementServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,16 +51,15 @@ public class AnnouncementController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Announcement>> getAllAnnouncements() {
-        List<Announcement> announcements = announcementRepository.findAllByOrderByPublishingDateDesc();
+    @GetMapping("/all/{page}")
+    public ResponseEntity<List<Announcement>> getAllAnnouncements(@PathVariable ("page") int page) {
+        List<Announcement> announcements = announcementServices.getAnnouncement(page);
         return new ResponseEntity<>(announcements,HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Announcement> getAllAnnouncements(@PathVariable String id) {
-        Long idLong = Long.parseLong(id);
-        Optional<Announcement> announcement = announcementRepository.findById(idLong);
+    public ResponseEntity<Announcement> getAllAnnouncements(@PathVariable Long id) {
+        Optional<Announcement> announcement = announcementRepository.findById(id);
         if(announcement.isPresent()) {
             return new ResponseEntity<>(announcement.get(), HttpStatus.OK);
         }else{

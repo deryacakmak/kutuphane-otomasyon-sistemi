@@ -6,7 +6,12 @@ import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.AnnouncementRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,12 +42,17 @@ public class AnnouncementServices {
         }
     }
 
-
     public List<Announcement> getDeleteAnnouncement(List<Long> ids) {
         List<Announcement> announcementList = new ArrayList<>();
         for(Long id: ids){
             announcementList.add(announcementRepository.findById(id).get());
         }
         return announcementList;
+    }
+
+    public List<Announcement> getAnnouncement(int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Announcement> announcements = announcementRepository.findAllByOrderByPublishingDateDesc(pageable);
+        return announcements.toList();
     }
 }

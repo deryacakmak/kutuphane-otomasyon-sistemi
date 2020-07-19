@@ -1,17 +1,14 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.IncreaseStockDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookRepository;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +26,7 @@ public class BookServices {
 
 
     public BookInfo getBookAdd(AddBookDto addBookDto){
-        Book book = new Book();
-        book.setAuthor(addBookDto.getAuthor());
-        book.setCategory(addBookDto.getCategory());
-        book.setName(addBookDto.getName());
-        book.setLocation(addBookDto.getLocation());
-        bookRepository.saveAndFlush(book);
+        Book book = saveBook(addBookDto);
         BookInfo bookInfo = new BookInfo();
         bookInfo.setBorrowingNumber(addBookDto.getStock());
         bookInfo.setStock(addBookDto.getStock());
@@ -45,35 +37,58 @@ public class BookServices {
         return bookInfo;
     }
 
-    public Book getBookDelete(DeleteBookDto deleteBookDto) {
-        List<BookInfo> books = bookInfoRepository.findByISBN(deleteBookDto.getIsbn());
-        if(!(books.isEmpty())){
-            for(BookInfo book: books){
-                if(book.getPublicationDate().getYear() == (deleteBookDto.getPublicationDate().getYear())){
-                    Book deletedBook = book.getBook();
-                    System.out.println(book.getBook().getId());
-                    bookInfoRepository.delete(book);
-                    return deletedBook;
-                }
-            }
-        }
-        return null;
+    private Book saveBook(AddBookDto addBookDto){
+        Book book = new Book();
+        book.setAuthor(addBookDto.getAuthor());
+        book.setCategory(addBookDto.getCategory());
+        book.setName(addBookDto.getName());
+        book.setLocation(addBookDto.getLocation());
+        bookRepository.saveAndFlush(book);
+        return book;
 
     }
 
-    public void increaseBookStock(IncreaseStockDto increaseStockDto) {
-        List<BookInfo> books = bookInfoRepository.findByISBN(increaseStockDto.getIsbn());
-        if (!(books.isEmpty())) {
-            for (BookInfo book : books) {
-                if (book.getPublicationDate().getYear() == (increaseStockDto.getPublicationYear().getYear())) {
-                        book.setStock(book.getStock()+increaseStockDto.getStockNumber());
-                        bookInfoRepository.save(book);
-
-                        return;
-                }
+    public List<Book> getBookDelete(List<Long> ids) {
+        List<Book> bookList = new ArrayList<>();
+        for(Long id: ids){
+            Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(id);
+            if(bookInfo.isPresent()) {
+                bookInfoRepository.delete(bookInfo.get());
+                Optional<Book> book = bookRepository.findById(id);
+                bookList.add(book.get());
             }
+        }
+        return bookList;
 
+    }
+
+    public  void updatedBook(UpdateBookDto updateBookDto){
+        Optional<Book> book = bookRepository.findById(updateBookDto.getId());
+        if(book.isPresent()){
+            book.get().setAuthor(updateBookDto.getAuthor());
+            book.get().setLocation(updateBookDto.getLocation());
+            book.get().setCategory(updateBookDto.getCategory());
+            book.get().setName(updateBookDto.getName());
+            updateBookInfo(updateBookDto);
+            bookRepository.save(book.get());
+        }
+
+    }
+
+    private void updateBookInfo(UpdateBookDto updateBookDto){
+        Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(updateBookDto.getId());
+        if(bookInfo.isPresent()) {
+            bookInfo.get().setStock(updateBookDto.getStock());
+            bookInfo.get().setISBN(updateBookDto.getIsbn());
+            bookInfo.get().setPublisher(updateBookDto.getPublisher());
+            bookInfo.get().setPublicationDate(updateBookDto.getPublicationDate());
+            bookInfo.get().setBorrowingNumber(updateBookDto.getStock());
+            Optional<Book> book = bookRepository.findById(updateBookDto.getId());
+            bookInfo.get().setBook(book.get());
+            bookInfoRepository.save(bookInfo.get());
         }
     }
 
-}
+    }
+
+

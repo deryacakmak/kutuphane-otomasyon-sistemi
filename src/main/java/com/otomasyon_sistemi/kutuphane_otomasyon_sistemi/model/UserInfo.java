@@ -4,7 +4,6 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user_info")
 public class UserInfo {
 
     @Id

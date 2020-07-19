@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "announcements")
 public class Announcement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

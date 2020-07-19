@@ -15,7 +15,7 @@ public class BookInfo {
     private Long id;
 
     @Column
-    private Long ISBN;
+    private String ISBN;
 
     @Column
     private Long stock;
@@ -35,8 +35,7 @@ public class BookInfo {
 
     public BookInfo() {}
 
-
-    public BookInfo(Long id, Long ISBN, Long stock, Long borrowingNumber, Date publicationDate, Book book, String publisher) {
+    public BookInfo(Long id, String ISBN, Long stock, Long borrowingNumber, Date publicationDate, Book book, String publisher) {
         this.id = id;
         this.ISBN = ISBN;
         this.stock = stock;
@@ -54,11 +53,11 @@ public class BookInfo {
         this.id = id;
     }
 
-    public Long getISBN() {
+    public String getISBN() {
         return ISBN;
     }
 
-    public void setISBN(Long ISBN) {
+    public void setISBN(String ISBN) {
         this.ISBN = ISBN;
     }
 

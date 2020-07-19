@@ -2,10 +2,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteAnnouncementDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.IncreaseStockDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
@@ -17,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,23 +38,22 @@ public class BookController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Response> deleteBook(@RequestBody DeleteBookDto deleteBookDto){
-        Book book = bookServices.getBookDelete(deleteBookDto);
-        if(book!= null){
-            bookRepository.delete(book);
-            Response response = new Response("Book deleted successfully");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else{
-            throw new BadRequestException("There is no book with this id");
-        }
+    @DeleteMapping("/delete/{ids}")
+    public ResponseEntity<Response> deleteBook(@PathVariable ("ids") List<Long> ids){
+            List<Book> books = bookServices.getBookDelete(ids);
+            for(Book book: books){
+                bookRepository.delete(book);
+            }
+        Response response = new Response("Book deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/increaseStock")
-    public ResponseEntity<Response> increaseStockNumber(@RequestBody IncreaseStockDto increaseStockDto){
-        bookServices.increaseBookStock(increaseStockDto);
-        Response response = new Response("Book deleted successfully");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @PostMapping("/update")
+    public ResponseEntity<Response> updateBook(@RequestBody UpdateBookDto updateBookDto){
+        bookServices.updatedBook(updateBookDto);
+        Response response = new Response("Book updated successfully");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
 }

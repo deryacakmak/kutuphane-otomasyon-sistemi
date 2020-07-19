@@ -1,7 +1,6 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddAnnouncementDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.DeleteAnnouncementDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Announcement;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.AnnouncementRepository;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -40,17 +40,34 @@ public class AnnouncementController {
     }
 
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Response> deleteAnnouncement(@RequestBody DeleteAnnouncementDto deleteAnnouncementDto) {
-        Optional<Announcement> announcement = announcementServices.getDeleteAnnouncement(deleteAnnouncementDto);
-        if(announcement != null){
-            announcementRepository.delete(announcement.get());
+    @DeleteMapping("/delete/{ids}")
+    public ResponseEntity<Response> deleteAnnouncement(@PathVariable ("ids") List<Long> ids) {
+            List<Announcement> announcementList = announcementServices.getDeleteAnnouncement(ids);
+            for(Announcement announcement :announcementList) {
+                announcementRepository.delete(announcement);
+            }
             Response response = new Response("Announcement deleted successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        else{
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Announcement>> getAllAnnouncements() {
+        List<Announcement> announcements = announcementRepository.findAllByOrderByPublishingDateDesc();
+        return new ResponseEntity<>(announcements,HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Announcement> getAllAnnouncements(@PathVariable String id) {
+        Long idLong = Long.parseLong(id);
+        Optional<Announcement> announcement = announcementRepository.findById(idLong);
+        if(announcement.isPresent()) {
+            return new ResponseEntity<>(announcement.get(), HttpStatus.OK);
+        }else{
             throw new BadRequestException("There is no announcement with this id");
         }
     }
+
+
 }
+
 

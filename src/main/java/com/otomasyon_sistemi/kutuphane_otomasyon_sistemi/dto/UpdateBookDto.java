@@ -2,7 +2,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto;
 
 import java.util.Date;
 
-public class AddBookDto {
+public class UpdateBookDto {
     private String name;
     private String author;
     private String location;
@@ -11,10 +11,11 @@ public class AddBookDto {
     private Date publicationDate;
     private String category;
     private String publisher;
+    private Long id;
 
-    public AddBookDto(){}
+    public UpdateBookDto(){}
 
-    public AddBookDto(String name, String author, String location, String isbn, Long stock, Date publicationDate, String category, String publisher) {
+    public UpdateBookDto(String name, String author, String location, String isbn, Long stock, Date publicationDate, String category, String publisher, Long id) {
         this.name = name;
         this.author = author;
         this.location = location;
@@ -23,6 +24,7 @@ public class AddBookDto {
         this.publicationDate = publicationDate;
         this.category = category;
         this.publisher = publisher;
+        this.id = id;
     }
 
     public String getName() {
@@ -49,7 +51,7 @@ public class AddBookDto {
         this.location = location;
     }
 
-    public String getISBN() {
+    public String getIsbn() {
         return isbn;
     }
 
@@ -87,5 +89,13 @@ public class AddBookDto {
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

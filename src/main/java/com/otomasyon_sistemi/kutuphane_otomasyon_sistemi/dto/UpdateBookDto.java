@@ -11,11 +11,11 @@ public class UpdateBookDto {
     private Date publicationDate;
     private String category;
     private String publisher;
-    private Long id;
+
 
     public UpdateBookDto(){}
 
-    public UpdateBookDto(String name, String author, String location, String isbn, Long stock, Date publicationDate, String category, String publisher, Long id) {
+    public UpdateBookDto(String name, String author, String location, String isbn, Long stock, Date publicationDate, String category, String publisher) {
         this.name = name;
         this.author = author;
         this.location = location;
@@ -24,7 +24,6 @@ public class UpdateBookDto {
         this.publicationDate = publicationDate;
         this.category = category;
         this.publisher = publisher;
-        this.id = id;
     }
 
     public String getName() {
@@ -91,11 +90,4 @@ public class UpdateBookDto {
         this.publisher = publisher;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

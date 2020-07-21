@@ -3,9 +3,8 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddAnnouncementDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Announcement;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.AnnouncementRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services.AnnouncementServices;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services.IAnnouncementServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,16 +21,13 @@ import java.util.Optional;
 public class AnnouncementController {
 
     @Autowired
-    AnnouncementServices announcementServices;
-    @Autowired
-    private AnnouncementRepository announcementRepository;
+    IAnnouncementServices announcementServices;
 
 
     @PostMapping("/add")
     public ResponseEntity<Response> addAnnouncement(@RequestBody AddAnnouncementDto addAnnouncementDto) {
         Announcement announcement = announcementServices.getAddAnnouncement(addAnnouncementDto);
         if(announcement != null){
-            announcementRepository.save(announcement);
             Response response = new Response("Announcement added successfully");
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
@@ -44,22 +40,19 @@ public class AnnouncementController {
     @DeleteMapping("/delete/{ids}")
     public ResponseEntity<Response> deleteAnnouncement(@PathVariable ("ids") List<Long> ids) {
             List<Announcement> announcementList = announcementServices.getDeleteAnnouncement(ids);
-            for(Announcement announcement :announcementList) {
-                announcementRepository.delete(announcement);
-            }
             Response response = new Response("Announcement deleted successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-    @GetMapping("/all/{page}")
-    public ResponseEntity<List<Announcement>> getAllAnnouncements(@PathVariable ("page") int page) {
-        List<Announcement> announcements = announcementServices.getAnnouncement(page);
+    @GetMapping("/all/{pageSize}/{page}")
+    public ResponseEntity<Page<Announcement>> getAllAnnouncements(@PathVariable (name = "pageSize") int pageSize,@PathVariable (name = "page") int page) {
+        Page<Announcement> announcements = announcementServices.getAllAnnouncement(page, pageSize);
         return new ResponseEntity<>(announcements,HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Announcement> getAllAnnouncements(@PathVariable Long id) {
-        Optional<Announcement> announcement = announcementRepository.findById(id);
+    public ResponseEntity<Announcement> getAnnouncement(@PathVariable Long id) {
+        Optional<Announcement> announcement = announcementServices.getAnnouncement(id);
         if(announcement.isPresent()) {
             return new ResponseEntity<>(announcement.get(), HttpStatus.OK);
         }else{

@@ -12,13 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AnnouncementServices {
+@Transactional
+public class AnnouncementServices implements IAnnouncementServices {
 
     @Autowired
     private AnnouncementRepository announcementRepository;
@@ -34,6 +36,7 @@ public class AnnouncementServices {
         Optional<User> publisher = userRepository.findById(addAnnouncementDto.getPublisherId());
         if (publisher.isPresent()) {
             announcement.setPublisher(publisher.get());
+            announcementRepository.save(announcement);
             return announcement;
 
         } else {
@@ -46,12 +49,20 @@ public class AnnouncementServices {
         for(Long id: ids){
             announcementList.add(announcementRepository.findById(id).get());
         }
+        for(Announcement announcement :announcementList) {
+            announcementRepository.delete(announcement);
+        }
         return announcementList;
     }
 
-    public List<Announcement> getAnnouncement(int page){
-        Pageable pageable = PageRequest.of(page, 10);
+    public Page<Announcement> getAllAnnouncement(int page, int pageSize){
+        Pageable pageable = PageRequest.of(page,  pageSize);
         Page<Announcement> announcements = announcementRepository.findAllByOrderByPublishingDateDesc(pageable);
-        return announcements.toList();
+        return announcements;
     }
+
+    public Optional<Announcement> getAnnouncement(Long id){
+        return announcementRepository.findById(id);
+    }
+
 }

@@ -10,18 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookServices {
+@Transactional
+public class BookServices implements IBookServices {
 
 
 
@@ -42,6 +40,7 @@ public class BookServices {
         bookInfo.setPublisher(addBookDto.getPublisher());
         bookInfo.setPublicationDate(addBookDto.getPublicationDate());
         bookInfo.setBook(book);
+        bookInfoRepository.save(bookInfo);
         return bookInfo;
     }
 
@@ -65,50 +64,57 @@ public class BookServices {
                 Optional<Book> book = bookRepository.findById(id);
                 bookList.add(book.get());
             }
+            for(Book book: bookList){
+                bookRepository.delete(book);
+            }
         }
         return bookList;
 
     }
 
-    public  void updatedBook(UpdateBookDto updateBookDto){
-        Optional<Book> book = bookRepository.findById(updateBookDto.getId());
+    public  void updatedBook(UpdateBookDto updateBookDto, Long id){
+        Optional<Book> book = bookRepository.findById(id);
         if(book.isPresent()){
             book.get().setAuthor(updateBookDto.getAuthor());
             book.get().setLocation(updateBookDto.getLocation());
             book.get().setCategory(updateBookDto.getCategory());
             book.get().setName(updateBookDto.getName());
-            updateBookInfo(updateBookDto);
+            updateBookInfo(updateBookDto,id);
             bookRepository.save(book.get());
         }
 
     }
 
-    private void updateBookInfo(UpdateBookDto updateBookDto){
-        Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(updateBookDto.getId());
+    private void updateBookInfo(UpdateBookDto updateBookDto, Long id){
+        Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(id);
         if(bookInfo.isPresent()) {
             bookInfo.get().setStock(updateBookDto.getStock());
             bookInfo.get().setISBN(updateBookDto.getIsbn());
             bookInfo.get().setPublisher(updateBookDto.getPublisher());
             bookInfo.get().setPublicationDate(updateBookDto.getPublicationDate());
             bookInfo.get().setBorrowingNumber(updateBookDto.getStock());
-            Optional<Book> book = bookRepository.findById(updateBookDto.getId());
+            Optional<Book> book = bookRepository.findById(id);
             bookInfo.get().setBook(book.get());
             bookInfoRepository.save(bookInfo.get());
         }
     }
 
-    public List<BookInfo> getSearchedBook(SearchDto searchDto, int page){
-        Pageable pageable = PageRequest.of(page, 2);
+    public Page<BookInfo> getSearchForBook(SearchDto searchDto, int page, int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize);
        if(searchDto.getIsbn() != null){
-           return bookInfoRepository.findAllByISBN(searchDto.getIsbn(),pageable).toList();
+           return bookInfoRepository.findAllByISBN(searchDto.getIsbn(),pageable);
        }
        else if(searchDto.getAuthor() != null && searchDto.getName() != null){
-           return bookInfoRepository.findAllByBookNameAndBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable).toList();
+           return bookInfoRepository.findAllByBookNameAndBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable);
        }
        else{
-           return bookInfoRepository.findAllByBookNameOrBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable).toList();
+           return bookInfoRepository.findAllByBookNameOrBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable);
        }
 
+    }
+
+    public  Optional<BookInfo> getBook(Long id){
+        return bookInfoRepository.findByBookId(id);
     }
 
     }

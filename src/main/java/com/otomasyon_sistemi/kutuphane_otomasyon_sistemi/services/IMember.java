@@ -17,6 +17,7 @@ public interface IMember {
     ResponseEntity<Response> leadingBook(Long id, SearchMemberDto searchMemberDto);
     Page<BorrowingInfo> getBorrowedBooks(Long id, int page, int pageSize);
     ResponseEntity<Response> deliverBook(Long id);
+    ResponseEntity<Response> extendBookDate(Long bookInfoId);
 
 
 }

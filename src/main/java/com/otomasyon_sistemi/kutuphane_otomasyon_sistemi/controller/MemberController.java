@@ -71,4 +71,9 @@ public class MemberController {
         return memberService.deliverBook(id);
     }
 
+    @GetMapping("/extend/{id}")
+    public ResponseEntity<Response> extendBookDate(@PathVariable("id") Long id){
+        return memberService.extendBookDate(id);
+    }
+
 }

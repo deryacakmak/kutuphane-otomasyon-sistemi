@@ -5,6 +5,7 @@ import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchMemberDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BorrowingInfo;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.UserInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
@@ -100,6 +101,19 @@ public class MemberService implements IMember{
         }
         else{
             throw new BadRequestException("Book not found!");
+        }
+    }
+    public ResponseEntity<Response> extendBookDate(Long borrowingInfoId){
+        BorrowingInfo borrowingInfo = borrowingInfoRepository.findById(borrowingInfoId).get();
+        UserInfo userInfo  = userInfoRepository.findByUserId(borrowingInfo.getUser().getId()).get();
+        if(!(borrowingInfo.isReturnSituation()) && !(userInfo.getSuspendedSituation())){
+            borrowingInfo.setExtendDate(true);
+            Response response = new Response("Your new delivery date has been extended for 5 days.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        else{
+            Response response = new Response("You cannot extend date!");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
 }

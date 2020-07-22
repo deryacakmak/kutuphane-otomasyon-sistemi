@@ -1,7 +1,7 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
@@ -15,6 +15,6 @@ public interface IBookServices {
     BookInfo getBookAdd(AddBookDto addBookDto);
     List<Book> getBookDelete(List<Long> ids);
     void updatedBook(UpdateBookDto updateBookDto, Long id);
-    Page<BookInfo> getSearchForBook(SearchDto searchDto, int page, int pageSize);
+    Page<BookInfo> getSearchForBook(SearchBookDto searchBookDto, int page, int pageSize);
     Optional<BookInfo> getBook(Long id);
 }

@@ -1,15 +1,25 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto;
 
-public class MemberDto {
+public class SearchMemberDto {
 
     private String firstName;
     private String lastName;
+    private Long userIdentifier;
 
-    public MemberDto(){}
+    public SearchMemberDto(){}
 
-    public MemberDto(String firstName, String lastName) {
+    public SearchMemberDto(String firstName, String lastName, Long userIdentifier) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.userIdentifier = userIdentifier;
+    }
+
+    public Long getUserIdentifier() {
+        return userIdentifier;
+    }
+
+    public void setUserIdentifier(Long userIdentifier) {
+        this.userIdentifier = userIdentifier;
     }
 
     public String getFirstName() {

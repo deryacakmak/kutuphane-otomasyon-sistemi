@@ -2,7 +2,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller;
 
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Book;
@@ -48,8 +48,8 @@ public class BookController {
     }
 
     @PostMapping("/search/{pageSize}/{page}")
-    public ResponseEntity<Page<BookInfo>> getAllSearchForBooks(@PathVariable ("pageSize") int pageSize,@PathVariable ("page") int page, @RequestBody SearchDto searchDto){
-        Page<BookInfo> books = bookServices.getSearchForBook(searchDto,page, pageSize);
+    public ResponseEntity<Page<BookInfo>> getAllSearchForBooks(@PathVariable ("pageSize") int pageSize,@PathVariable ("page") int page, @RequestBody SearchBookDto searchBookDto){
+        Page<BookInfo> books = bookServices.getSearchForBook(searchBookDto,page, pageSize);
         if(!(books.isEmpty())){
             return new ResponseEntity<>(books, HttpStatus.OK);
         }else{

@@ -32,6 +32,14 @@ public class UserInfo {
         this.bookBorrowingSituation = bookBorrowingSituation;
     }
 
+    public boolean isBookBorrowingSituation() {
+        return bookBorrowingSituation;
+    }
+
+
+    public void setBookBorrowingSituation(boolean bookBorrowingSituation) {
+        this.bookBorrowingSituation = bookBorrowingSituation;
+    }
 
     public Long getId() {
         return id;
@@ -57,7 +65,7 @@ public class UserInfo {
         this.phoneNumber = phoneNumber;
     }
 
-    public boolean isSuspendedSituation() {
+    public boolean getSuspendedSituation() {
         return suspendedSituation;
     }
 
@@ -72,4 +80,5 @@ public class UserInfo {
     public void bookBorrowingSituation(boolean bookBarowingSituation) {
         this.bookBorrowingSituation = bookBarowingSituation;
     }
+
 }

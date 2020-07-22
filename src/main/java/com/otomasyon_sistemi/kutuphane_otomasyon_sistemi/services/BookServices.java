@@ -1,7 +1,7 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.AddBookDto;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchDto;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.UpdateBookDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
@@ -99,16 +99,16 @@ public class BookServices implements IBookServices {
         }
     }
 
-    public Page<BookInfo> getSearchForBook(SearchDto searchDto, int page, int pageSize){
+    public Page<BookInfo> getSearchForBook(SearchBookDto searchBookDto, int page, int pageSize){
         Pageable pageable = PageRequest.of(page, pageSize);
-       if(searchDto.getIsbn() != null){
-           return bookInfoRepository.findAllByISBN(searchDto.getIsbn(),pageable);
+       if(searchBookDto.getIsbn() != null){
+           return bookInfoRepository.findAllByISBN(searchBookDto.getIsbn(),pageable);
        }
-       else if(searchDto.getAuthor() != null && searchDto.getName() != null){
-           return bookInfoRepository.findAllByBookNameAndBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable);
+       else if(searchBookDto.getAuthor() != null && searchBookDto.getName() != null){
+           return bookInfoRepository.findAllByBookNameAndBookAuthor(searchBookDto.getName(), searchBookDto.getAuthor(),pageable);
        }
        else{
-           return bookInfoRepository.findAllByBookNameOrBookAuthor(searchDto.getName(),searchDto.getAuthor(),pageable);
+           return bookInfoRepository.findAllByBookNameOrBookAuthor(searchBookDto.getName(), searchBookDto.getAuthor(),pageable);
        }
 
     }

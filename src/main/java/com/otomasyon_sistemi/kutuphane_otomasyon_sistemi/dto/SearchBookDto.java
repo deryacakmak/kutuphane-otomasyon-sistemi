@@ -2,14 +2,14 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto;
 
 import java.util.Date;
 
-public class SearchDto {
+public class SearchBookDto {
     private String name;
     private String author;
     private String isbn;
 
-    public SearchDto(){}
+    public SearchBookDto(){}
 
-    public SearchDto(String name, String author, String isbn) {
+    public SearchBookDto(String name, String author, String isbn) {
         this.name = name;
         this.author = author;
         this.isbn = isbn;

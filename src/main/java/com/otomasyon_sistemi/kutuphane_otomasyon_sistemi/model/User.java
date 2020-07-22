@@ -1,10 +1,10 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model;
 
 
-import com.sun.istack.NotNull;
-
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -21,10 +21,15 @@ public class User {
 
 
     @Column(unique = true)
+    @Email
     private String email;
 
-    @Column
-    private String userType;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(	name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     @Column
     private String password;
@@ -32,14 +37,15 @@ public class User {
     @Column
     private Long userIdentifier;
 
-    public User() {}
+    public User() {
+    }
 
-    public User(Long id, String firstName, String lastName, String email, String userType, String password, Long userIdentifier) {
+    public User(Long id, String firstName, String lastName, @Email String email, Set<Role> roles, String password, Long userIdentifier) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.userType = userType;
+        this.roles = roles;
         this.password = password;
         this.userIdentifier = userIdentifier;
     }
@@ -76,13 +82,6 @@ public class User {
         this.email = email;
     }
 
-    public String getUserType() {
-        return userType;
-    }
-
-    public void setUserType(String userType) {
-        this.userType = userType;
-    }
 
     public String getPassword() {
         return password;
@@ -99,4 +98,13 @@ public class User {
     public void setUserIdentifier(Long userIdentifier) {
         this.userIdentifier = userIdentifier;
     }
+
+    public Set<Role> getRole() {
+        return roles;
+    }
+
+    public void setRole(Set<Role> roles) {
+        this.roles = roles;
+    }
 }
+

@@ -13,3 +13,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+otomasyon_sistemi:
+  app:
+    jwtSecret : bezKoderSecretKey
+    jwtExpirationMs : 86400000

@@ -3,10 +3,7 @@ package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SearchMemberDto;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.exception.BadRequestException;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BookInfo;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.BorrowingInfo;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.UserInfo;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.*;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +30,20 @@ public class MemberService implements IMember{
     @Autowired
     private BookInfoRepository bookInfoRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     public Page<UserInfo> getMemberInfo(SearchMemberDto searchMemberDto, int page, int pageSize)
     {
         Pageable pageable = PageRequest.of(page, pageSize);
+        Optional<Role> role = roleRepository.findByName(EnumRole.ROLE_MEMBER);
         Page<UserInfo> users;
         if(searchMemberDto.getUserIdentifier() != null){
-            users = userInfoRepository.findByUserUserIdentifier(searchMemberDto.getUserIdentifier(), pageable);
+            users = userInfoRepository.findByUserUserIdentifierAndUserRoles(searchMemberDto.getUserIdentifier(), pageable,role.get());
+
         }
         else {
-            users = userInfoRepository.findByUserFirstNameAndUserLastName(searchMemberDto.getFirstName(), searchMemberDto.getLastName(), pageable);
+            users = userInfoRepository.findByUserFirstNameAndUserLastNameAndUserRoles(searchMemberDto.getFirstName(), searchMemberDto.getLastName(), pageable, role.get());
         }
         return users;
     }
@@ -62,8 +64,8 @@ public class MemberService implements IMember{
         return userInfoRepository.findByUserId(id);
     }
 
-    public ResponseEntity<Response> leadingBook(Long id, SearchMemberDto searchMemberDto){
-        Optional<UserInfo> member = userInfoRepository.findByUserUserIdentifier(searchMemberDto.getUserIdentifier());
+    public ResponseEntity<Response> lendBook(Long id, Long  memberId){
+        Optional<UserInfo> member = userInfoRepository.findById(memberId);
         if(member.isPresent()){
             if(member.get().bookBorrowingSituation()) {
                 BorrowingInfo borrowingInfo = new BorrowingInfo();
@@ -76,18 +78,19 @@ public class MemberService implements IMember{
                 borrowingInfo.setExtendDate(false);
                 member.get().setBookBorrowingSituation(false);
                 borrowingInfoRepository.save(borrowingInfo);
-                Response response = new Response("Book borrowed");
+                bookInfoRepository.save(book);
+                Response response = new Response("Book is lend successfully");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else{
-                throw new BadRequestException("Deliver Book Before");
+                throw new BadRequestException("Deliver book that is borrowed before ");
             }
         }
         throw new BadRequestException("There is no member with this id");
     }
 
     public ResponseEntity<Response> deliverBook(Long id){
-        Optional<BorrowingInfo> borrowingInfo = borrowingInfoRepository.findByBookInfoIdAndReturnSituation(id,false);
+        Optional<BorrowingInfo> borrowingInfo = borrowingInfoRepository.findByIdAndReturnSituation(id,false);
         if(borrowingInfo.isPresent()){
             UserInfo userInfo = userInfoRepository.findByUserId(borrowingInfo.get().getUser().getId()).get();
             borrowingInfo.get().setReturnSituation(true);
@@ -96,7 +99,7 @@ public class MemberService implements IMember{
             if(!(userInfo.getSuspendedSituation())){
                 userInfo.setBookBorrowingSituation(true);
             }
-             Response response = new Response("Book is delivered");
+            Response response = new Response("Book is delivered successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         else{
@@ -106,7 +109,7 @@ public class MemberService implements IMember{
     public ResponseEntity<Response> extendBookDate(Long borrowingInfoId){
         BorrowingInfo borrowingInfo = borrowingInfoRepository.findById(borrowingInfoId).get();
         UserInfo userInfo  = userInfoRepository.findByUserId(borrowingInfo.getUser().getId()).get();
-        if(!(borrowingInfo.isReturnSituation()) && !(userInfo.getSuspendedSituation())){
+        if(!(borrowingInfo.isReturnSituation()) && !(userInfo.getSuspendedSituation()) && !(borrowingInfo.isExtendDate())){
             borrowingInfo.setExtendDate(true);
             Response response = new Response("Your new delivery date has been extended for 5 days.");
             return new ResponseEntity<>(response, HttpStatus.OK);

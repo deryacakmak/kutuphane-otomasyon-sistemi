@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,29 +28,32 @@ public class BookController {
 
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> addBook(@RequestBody AddBookDto addBookDto) {
-        BookInfo bookInfo = bookServices.getBookAdd(addBookDto);
+        BookInfo bookInfo = bookServices.bookAdd(addBookDto);
         Response response = new Response("Book added successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete/{ids}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> deleteBook(@PathVariable ("ids") List<Long> ids){
-        List<Book> books = bookServices.getBookDelete(ids);
+        List<Book> books = bookServices.bookDelete(ids);
         Response response = new Response("Book deleted successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/update/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> updateBook(@PathVariable ("id") Long id, @RequestBody UpdateBookDto updateBookDto){
-        bookServices.updatedBook(updateBookDto, id);
+        bookServices.updateBookInfo(updateBookDto, id);
         Response response = new Response("Book updated successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/search/{pageSize}/{page}")
     public ResponseEntity<Page<BookInfo>> getAllSearchForBooks(@PathVariable ("pageSize") int pageSize,@PathVariable ("page") int page, @RequestBody SearchBookDto searchBookDto){
-        Page<BookInfo> books = bookServices.getSearchForBook(searchBookDto,page, pageSize);
+        Page<BookInfo> books = bookServices.searchForBook(searchBookDto,page, pageSize);
         if(!(books.isEmpty())){
             return new ResponseEntity<>(books, HttpStatus.OK);
         }else{

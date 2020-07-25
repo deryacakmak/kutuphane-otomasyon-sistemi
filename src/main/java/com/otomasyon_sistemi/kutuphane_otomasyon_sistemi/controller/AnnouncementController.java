@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -25,6 +26,7 @@ public class AnnouncementController {
 
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> addAnnouncement(@RequestBody AddAnnouncementDto addAnnouncementDto) {
         Announcement announcement = announcementServices.getAddAnnouncement(addAnnouncementDto);
         if(announcement != null){
@@ -38,10 +40,17 @@ public class AnnouncementController {
 
 
     @DeleteMapping("/delete/{ids}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> deleteAnnouncement(@PathVariable ("ids") List<Long> ids) {
             List<Announcement> announcementList = announcementServices.getDeleteAnnouncement(ids);
-            Response response = new Response("Announcement deleted successfully");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            if(!(announcementList.isEmpty())){
+                Response response = new Response("Announcement deleted successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                throw new BadRequestException("There are no announcements with these ids");
+            }
+
         }
 
     @GetMapping("/all/{pageSize}/{page}")

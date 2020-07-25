@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public class MemberController {
 
 
     @PostMapping("/search/{pageSize}/{page}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Page<UserInfo>> getAllMembers(@PathVariable ("pageSize") int pageSize,@PathVariable ("page") int page, @RequestBody SearchMemberDto searchMemberDto) {
         Page<UserInfo> users = memberService.getMemberInfo(searchMemberDto,page,pageSize);
         if(!(users.isEmpty())){
@@ -35,6 +37,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<UserInfo> getMember(@PathVariable Long id) {
         Optional<UserInfo> member = memberService.getMember(id);
         if(member.isPresent()) {
@@ -44,13 +47,15 @@ public class MemberController {
         }
     }
     @GetMapping("/borrowed/{pageSize}/{id}/{page}")
-    public ResponseEntity<Page<BorrowingInfo>> getBorrowedBook(@PathVariable ("pageSize") int pageSize, @PathVariable Long id, @PathVariable int page){
+    @PreAuthorize("hasRole('MEMBER')")
+    public ResponseEntity<Page<BorrowingInfo>> getBorrowedBook(@PathVariable ("pageSize") int pageSize, @PathVariable("id)") Long id, @PathVariable("page") int page){
         Page<BorrowingInfo> books = memberService.getBorrowedBook(id,page,pageSize);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @PostMapping("/borrowed/{pageSize}/{page}")
-    public ResponseEntity<Page<BorrowingInfo>> getBorrowedBook(@PathVariable ("pageSize") int pageSize, @PathVariable int page, @RequestBody SearchMemberDto searchMemberDto){
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
+    public ResponseEntity<Page<BorrowingInfo>> getMembersBorrowedBooks(@PathVariable ("pageSize") int pageSize, @PathVariable int page, @RequestBody SearchMemberDto searchMemberDto){
         Page<BorrowingInfo> books = memberService.getBorrowedBooks(searchMemberDto.getUserIdentifier(),page,pageSize);
        if (!(books.isEmpty())) {
            return new ResponseEntity<>(books, HttpStatus.OK);
@@ -60,18 +65,22 @@ public class MemberController {
        }
     }
 
-    @PostMapping("/leadBook/{id}")
-    public ResponseEntity<Response> leadBook(@PathVariable ("id") Long id,@RequestBody SearchMemberDto searchMemberDto){
-         return memberService.leadingBook(id, searchMemberDto);
+    @PostMapping("/leadBook/{MemberId}/{BookId}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
+    public ResponseEntity<Response> lendBook(@PathVariable ("BookId") Long id,@PathVariable ("MemberId") Long memberId){
+         return memberService.lendBook(id, memberId);
 
     }
 
-    @GetMapping("/deliver/{id}")
+    @PostMapping("/deliver/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> deliverBook(@PathVariable("id") Long id){
+
         return memberService.deliverBook(id);
     }
 
     @GetMapping("/extend/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('OFFICER') or hasRole('MEMBER')")
     public ResponseEntity<Response> extendBookDate(@PathVariable("id") Long id){
         return memberService.extendBookDate(id);
     }

@@ -14,5 +14,5 @@ public interface BorrowingInfoRepository extends JpaRepository<BorrowingInfo, Lo
 
     Page<BorrowingInfo> findAllByUserIdOrderByBorrowingDateDesc(Long id,Pageable page);
     Page<BorrowingInfo> findAllByUserUserIdentifierOrderByBorrowingDateDesc(Long id,Pageable page);
-    Optional<BorrowingInfo> findByBookInfoIdAndReturnSituation(Long id, Boolean situation);
+    Optional<BorrowingInfo> findByIdAndReturnSituation(Long id, Boolean situation);
 }

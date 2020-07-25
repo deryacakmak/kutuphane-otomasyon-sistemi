@@ -31,7 +31,7 @@ public class BookServices implements IBookServices {
 
 
 
-    public BookInfo getBookAdd(AddBookDto addBookDto){
+    public BookInfo bookAdd(AddBookDto addBookDto){
         Book book = saveBook(addBookDto);
         BookInfo bookInfo = new BookInfo();
         bookInfo.setBorrowingNumber(addBookDto.getStock());
@@ -55,7 +55,7 @@ public class BookServices implements IBookServices {
 
     }
 
-    public List<Book> getBookDelete(List<Long> ids) {
+    public List<Book> bookDelete(List<Long> ids) {
         List<Book> bookList = new ArrayList<>();
         for(Long id: ids){
             Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(id);
@@ -72,34 +72,30 @@ public class BookServices implements IBookServices {
 
     }
 
-    public  void updatedBook(UpdateBookDto updateBookDto, Long id){
-        Optional<Book> book = bookRepository.findById(id);
-        if(book.isPresent()){
-            book.get().setAuthor(updateBookDto.getAuthor());
-            book.get().setLocation(updateBookDto.getLocation());
-            book.get().setCategory(updateBookDto.getCategory());
-            book.get().setName(updateBookDto.getName());
-            updateBookInfo(updateBookDto,id);
-            bookRepository.save(book.get());
-        }
-
+    private  void updatedBook(UpdateBookDto updateBookDto, Book book){
+            book.setAuthor(updateBookDto.getAuthor());
+            book.setLocation(updateBookDto.getLocation());
+            book.setCategory(updateBookDto.getCategory());
+            book.setName(updateBookDto.getName());
+            bookRepository.save(book);
     }
 
-    private void updateBookInfo(UpdateBookDto updateBookDto, Long id){
-        Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(id);
+    public void updateBookInfo(UpdateBookDto updateBookDto, Long id){
+        Optional<BookInfo> bookInfo = bookInfoRepository.findById(id);
         if(bookInfo.isPresent()) {
-            bookInfo.get().setStock(updateBookDto.getStock());
+            bookInfo.get().setStock(updateBookDto.getStock()+bookInfo.get().getStock());
             bookInfo.get().setISBN(updateBookDto.getIsbn());
             bookInfo.get().setPublisher(updateBookDto.getPublisher());
             bookInfo.get().setPublicationDate(updateBookDto.getPublicationDate());
-            bookInfo.get().setBorrowingNumber(updateBookDto.getStock());
-            Optional<Book> book = bookRepository.findById(id);
-            bookInfo.get().setBook(book.get());
+            bookInfo.get().setBorrowingNumber(updateBookDto.getStock()+bookInfo.get().getBorrowingNumber());
+            Book book = bookInfo.get().getBook();
+            bookInfo.get().setBook(book);
+            updatedBook(updateBookDto,book);
             bookInfoRepository.save(bookInfo.get());
         }
     }
 
-    public Page<BookInfo> getSearchForBook(SearchBookDto searchBookDto, int page, int pageSize){
+    public Page<BookInfo> searchForBook(SearchBookDto searchBookDto, int page, int pageSize){
         Pageable pageable = PageRequest.of(page, pageSize);
        if(searchBookDto.getIsbn() != null){
            return bookInfoRepository.findAllByISBN(searchBookDto.getIsbn(),pageable);

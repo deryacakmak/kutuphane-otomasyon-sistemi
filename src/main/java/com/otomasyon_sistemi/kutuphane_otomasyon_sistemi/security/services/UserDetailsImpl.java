@@ -77,7 +77,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return firstName+lastName;
+        return firstName+" "+lastName;
     }
 
     public void setId(Long id) {

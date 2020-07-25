@@ -9,7 +9,7 @@ import javax.validation.Valid;
 
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.LoginRequest;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SignUpRequest;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.ERole;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.EnumRole;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Role;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.UserInfo;
@@ -66,6 +66,7 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
@@ -95,32 +96,16 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
+        EnumRole allRoles[] = EnumRole.values();
 
-        if  (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "member":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_MEMBER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-
-                        break;
-                    case "officer":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_OFFICER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
+        for(String role: strRoles){
+            for (EnumRole enumRole : allRoles){
+                if(enumRole.label.equals(role)){
+                    Role adminRole = roleRepository.findByName(enumRole).get();
+                    roles.add(adminRole);
+                    break;
                 }
-            });
+            }
         }
 
         user.setRole(roles);

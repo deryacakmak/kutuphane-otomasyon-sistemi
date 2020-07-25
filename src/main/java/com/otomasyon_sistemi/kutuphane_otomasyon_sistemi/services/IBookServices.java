@@ -12,9 +12,9 @@ import java.util.Optional;
 
 public interface IBookServices {
 
-    BookInfo getBookAdd(AddBookDto addBookDto);
-    List<Book> getBookDelete(List<Long> ids);
-    void updatedBook(UpdateBookDto updateBookDto, Long id);
-    Page<BookInfo> getSearchForBook(SearchBookDto searchBookDto, int page, int pageSize);
+    BookInfo bookAdd(AddBookDto addBookDto);
+    List<Book> bookDelete(List<Long> ids);
+    void updateBookInfo(UpdateBookDto updateBookDto, Long id);
+    Page<BookInfo> searchForBook(SearchBookDto searchBookDto, int page, int pageSize);
     Optional<BookInfo> getBook(Long id);
 }

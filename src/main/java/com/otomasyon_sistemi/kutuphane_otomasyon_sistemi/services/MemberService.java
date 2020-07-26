@@ -12,9 +12,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +38,10 @@ public class MemberService implements IMember{
 
     @Autowired
     private RoleRepository roleRepository;
+
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     public Page<UserInfo> getMemberInfo(SearchMemberDto searchMemberDto, int page, int pageSize)
     {
@@ -119,4 +129,54 @@ public class MemberService implements IMember{
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
+    public void suspendMail(){
+        List<BorrowingInfo> users = borrowingInfoRepository.findByReturnSituation(false);
+        for(BorrowingInfo borrowingInfo : users){
+            Optional<UserInfo> user = userInfoRepository.findByUserId(borrowingInfo.getUser().getId());
+            if(!(user.get().getSuspendedSituation())){
+                Date today = new Date();
+                int diff = today.getDay()-borrowingInfo.getBorrowingDate().getDay();
+                if(borrowingInfo.isExtendDate() && diff == 15 ||!(borrowingInfo.isExtendDate()) && diff == 10){
+                    send("You have been suspended for not delivering the book.","suspended situation", user.get().getUser().getEmail());
+                    user.get().setSuspendedSituation(true);
+                }
+
+            }
+        }
+    }
+
+    public void checkSuspend(){
+        List<UserInfo> users = userInfoRepository.findBySuspendSituation(true);
+        for(UserInfo user : users){
+            BorrowingInfo borrowingInfo = borrowingInfoRepository.findByUserId(user.getUser().getId()).get();
+            if(borrowingInfo.isReturnSituation() && user.getSuspendedSituation()){
+                int diff = new Date().getDay() - borrowingInfo.getReturnDate().getDay();
+                if(diff == 3){
+                    user.setSuspendedSituation(false);
+                    user.setBookBorrowingSituation(true);
+                    send("suspended situation", "You can borrow new books",user.getUser().getEmail());
+                }
+            }
+        }
+    }
+
+
+
+    private void send(String subject, String content, String email) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+
+        try {
+            messageHelper.setTo(email);
+            messageHelper.setText(content);
+            messageHelper.setSubject(subject);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw  new BadRequestException("Mail error");
+        }
+        javaMailSender.send(mimeMessage);
+
+    }
+
+
 }

@@ -6,6 +6,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -15,4 +16,6 @@ public interface BorrowingInfoRepository extends JpaRepository<BorrowingInfo, Lo
     Page<BorrowingInfo> findAllByUserIdOrderByBorrowingDateDesc(Long id,Pageable page);
     Page<BorrowingInfo> findAllByUserUserIdentifierOrderByBorrowingDateDesc(Long id,Pageable page);
     Optional<BorrowingInfo> findByIdAndReturnSituation(Long id, Boolean situation);
+    List<BorrowingInfo> findByReturnSituation(Boolean situaiton);
+    Optional<BorrowingInfo> findByUserId(Long id);
 }

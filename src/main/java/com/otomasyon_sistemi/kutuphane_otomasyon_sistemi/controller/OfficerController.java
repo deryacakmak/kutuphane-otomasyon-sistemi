@@ -82,7 +82,7 @@ public class OfficerController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/suspendMail")
+    @GetMapping("/checkSuspend")
     @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> sendMail(){
         memberService.checkSuspend();

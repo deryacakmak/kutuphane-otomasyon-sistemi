@@ -146,7 +146,7 @@ public class MemberService implements IMember{
     }
 
     public void checkSuspend(){
-        List<UserInfo> users = userInfoRepository.findBySuspendSituation(true);
+        List<UserInfo> users = userInfoRepository.findBySuspendedSituation(true);
         for(UserInfo user : users){
             BorrowingInfo borrowingInfo = borrowingInfoRepository.findByUserId(user.getUser().getId()).get();
             if(borrowingInfo.isReturnSituation() && user.getSuspendedSituation()){

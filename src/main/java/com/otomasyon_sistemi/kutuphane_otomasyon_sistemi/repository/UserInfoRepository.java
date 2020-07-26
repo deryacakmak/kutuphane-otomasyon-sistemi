@@ -19,5 +19,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long>, Pagin
     Page<UserInfo> findByUserUserIdentifierAndUserRoles(Long id,Pageable pageable, Role role);
     Optional<UserInfo> findByUserUserIdentifier(Long id);
     Optional<UserInfo> findByUserId(Long userId);
-    List<UserInfo> findBySuspendSituation(Boolean situation);
+    List<UserInfo> findBySuspendedSituation(Boolean situation);
 }

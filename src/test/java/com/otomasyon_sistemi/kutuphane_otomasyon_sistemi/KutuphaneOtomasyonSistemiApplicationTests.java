@@ -11,6 +11,7 @@ class KutuphaneOtomasyonSistemiApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }

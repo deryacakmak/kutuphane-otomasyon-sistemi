@@ -1,30 +1,29 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi;
 
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller.AuthController;
+
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.EnumRole;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Role;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.UserInfo;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.BookInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.RoleRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserRepository;
-import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.response.MessageResponse;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.*;
-@RunWith(SpringRunner.class)
+
 @DataJpaTest
+@SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class SignUpTest {
 
     @Autowired
@@ -40,6 +39,7 @@ public class SignUpTest {
     @Autowired
     UserInfoRepository userInfoRepository;
 
+    @Test
     public void testSignUp(){
 
         // Create new user's account
@@ -73,7 +73,6 @@ public class SignUpTest {
         userInfo.setSuspendedSituation(false);
         userRepository.save(user);
         userInfoRepository.save(userInfo);
-
 
         assertTrue(userRepository.existsByEmail("deryacakmak6262@gmail.com"));
     }

@@ -9,8 +9,8 @@ import java.util.Optional;
 
 public interface IAnnouncementServices {
 
-    Announcement getAddAnnouncement(AddAnnouncementDto addAnnouncementDto);
-    List<Announcement> getDeleteAnnouncement(List<Long> ids);
+    Announcement addAnnouncement(AddAnnouncementDto addAnnouncementDto);
+    List<Announcement> deleteAnnouncement(List<Long> ids);
     Page<Announcement> getAllAnnouncement(int page, int pageSize);
     Optional<Announcement> getAnnouncement(Long id);
 }

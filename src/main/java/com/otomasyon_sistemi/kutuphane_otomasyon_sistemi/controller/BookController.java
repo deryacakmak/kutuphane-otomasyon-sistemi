@@ -40,6 +40,9 @@ public class BookController {
     @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> deleteBook(@PathVariable ("ids") List<Long> ids){
         List<Book> books = bookServices.bookDelete(ids);
+        if(!(books.isEmpty())){
+            throw new BadRequestException("Check Book Ids");
+        }
         Response response = new Response("Book deleted successfully");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

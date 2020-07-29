@@ -20,6 +20,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/announcement")
+
 public class AnnouncementController {
 
     @Autowired
@@ -29,7 +30,7 @@ public class AnnouncementController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> addAnnouncement(@RequestBody AddAnnouncementDto addAnnouncementDto) {
-        Announcement announcement = announcementServices.getAddAnnouncement(addAnnouncementDto);
+        Announcement announcement = announcementServices.addAnnouncement(addAnnouncementDto);
         if(announcement != null){
             Response response = new Response("Announcement added successfully");
             return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -43,7 +44,7 @@ public class AnnouncementController {
     @DeleteMapping("/delete/{ids}")
     @PreAuthorize("hasRole('USER') or hasRole('OFFICER')")
     public ResponseEntity<Response> deleteAnnouncement(@PathVariable ("ids") List<Long> ids) {
-            List<Announcement> announcementList = announcementServices.getDeleteAnnouncement(ids);
+            List<Announcement> announcementList = announcementServices.deleteAnnouncement(ids);
             if(!(announcementList.isEmpty())){
                 Response response = new Response("Announcement deleted successfully");
                 return new ResponseEntity<>(response, HttpStatus.OK);

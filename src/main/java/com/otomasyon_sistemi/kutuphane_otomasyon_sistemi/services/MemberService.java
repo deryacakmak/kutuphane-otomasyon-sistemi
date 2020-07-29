@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class MemberService implements IMember{
+public class MemberService implements IMember {
 
     @Autowired
     private UserInfoRepository userInfoRepository;
@@ -43,92 +43,110 @@ public class MemberService implements IMember{
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public Page<UserInfo> getMemberInfo(SearchMemberDto searchMemberDto, int page, int pageSize)
-    {
+    public Page<UserInfo> getMemberInfo(SearchMemberDto searchMemberDto, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Optional<Role> role = roleRepository.findByName(EnumRole.ROLE_MEMBER);
         Page<UserInfo> users;
-        if(searchMemberDto.getUserIdentifier() != null){
-            users = userInfoRepository.findByUserUserIdentifierAndUserRoles(searchMemberDto.getUserIdentifier(), pageable,role.get());
+        if (searchMemberDto.getUserIdentifier() != null) {
+            users = userInfoRepository.findByUserUserIdentifierAndUserRoles(searchMemberDto.getUserIdentifier(), pageable, role.get());
 
-        }
-        else {
+        } else {
             users = userInfoRepository.findByUserFirstNameAndUserLastNameAndUserRoles(searchMemberDto.getFirstName(), searchMemberDto.getLastName(), pageable, role.get());
         }
         return users;
     }
 
-    public Page<BorrowingInfo> getBorrowedBook(Long id, int page, int pageSize){
+    public Page<BorrowingInfo> getBorrowedBook(Long id, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<BorrowingInfo> borrowingInfos = borrowingInfoRepository.findAllByUserIdOrderByBorrowingDateDesc(id,pageable);
-       return borrowingInfos;
-    }
-
-    public Page<BorrowingInfo> getBorrowedBooks(Long id, int page, int pageSize){
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<BorrowingInfo> borrowingInfos = borrowingInfoRepository.findAllByUserUserIdentifierOrderByBorrowingDateDesc(id,pageable);
+        Page<BorrowingInfo> borrowingInfos = borrowingInfoRepository.findAllByUserIdOrderByBorrowingDateDesc(id, pageable);
         return borrowingInfos;
     }
 
-    public Optional<UserInfo> getMember( Long id){
+    public Page<BorrowingInfo> getBorrowedBooks(Long id, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<BorrowingInfo> borrowingInfos = borrowingInfoRepository.findAllByUserUserIdentifierOrderByBorrowingDateDesc(id, pageable);
+        return borrowingInfos;
+    }
+
+    public Optional<UserInfo> getMember(Long id) {
         return userInfoRepository.findByUserId(id);
     }
 
-    public ResponseEntity<Response> lendBook(Long id, Long  memberId){
+    public ResponseEntity<Response> lendBook(Long id, Long memberId) {
         Optional<UserInfo> member = userInfoRepository.findById(memberId);
-        if(member.isPresent()){
-            if(member.get().bookBorrowingSituation()) {
+        if (member.isPresent()) {
+            if (member.get().bookBorrowingSituation()) {
                 BorrowingInfo borrowingInfo = new BorrowingInfo();
-                BookInfo book = bookInfoRepository.findById(id).get();
-                book.setBorrowingNumber(book.getBorrowingNumber()-1);
-                borrowingInfo.setBookInfo(book);
-                borrowingInfo.setUser(member.get().getUser());
-                borrowingInfo.setBorrowingDate(new Date());
-                borrowingInfo.setReturnSituation(false);
-                borrowingInfo.setExtendDate(false);
-                member.get().setBookBorrowingSituation(false);
-                borrowingInfoRepository.save(borrowingInfo);
-                bookInfoRepository.save(book);
-                Response response = new Response("Book is lend successfully");
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            else{
+                Optional<BookInfo> book = bookInfoRepository.findById(id);
+                if (book.isPresent()) {
+                    BookInfo book2 = book.get();
+                    book2.setBorrowingNumber(book2.getBorrowingNumber() - 1);
+                    borrowingInfo.setBookInfo(book2);
+                    borrowingInfo.setUser(member.get().getUser());
+                    borrowingInfo.setBorrowingDate(new Date());
+                    borrowingInfo.setReturnSituation(false);
+                    borrowingInfo.setExtendDate(false);
+                    member.get().setBookBorrowingSituation(false);
+                    borrowingInfoRepository.save(borrowingInfo);
+                    bookInfoRepository.save(book2);
+                    Response response = new Response("Book is lend successfully");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    throw new BadRequestException("There is no book with this id ");
+                }
+
+            } else {
                 throw new BadRequestException("Deliver book that is borrowed before ");
             }
         }
         throw new BadRequestException("There is no member with this id");
     }
 
-    public ResponseEntity<Response> deliverBook(Long id){
-        Optional<BorrowingInfo> borrowingInfo = borrowingInfoRepository.findByIdAndReturnSituation(id,false);
-        if(borrowingInfo.isPresent()){
-            UserInfo userInfo = userInfoRepository.findByUserId(borrowingInfo.get().getUser().getId()).get();
-            borrowingInfo.get().setReturnSituation(true);
-            borrowingInfo.get().setReturnDate(new Date());
-            borrowingInfo.get().getBookInfo().setBorrowingNumber(borrowingInfo.get().getBookInfo().getBorrowingNumber()+1);
-            if(!(userInfo.getSuspendedSituation())){
-                userInfo.setBookBorrowingSituation(true);
+    public ResponseEntity<Response> deliverBook(Long id) {
+        Optional<BorrowingInfo> borrowingInfo = borrowingInfoRepository.findByIdAndReturnSituation(id, false);
+        if (borrowingInfo.isPresent()) {
+            Optional<UserInfo> userInfo = userInfoRepository.findByUserId(borrowingInfo.get().getUser().getId());
+            if (userInfo.isPresent()) {
+                borrowingInfo.get().setReturnSituation(true);
+                borrowingInfo.get().setReturnDate(new Date());
+                borrowingInfo.get().getBookInfo().setBorrowingNumber(borrowingInfo.get().getBookInfo().getBorrowingNumber() + 1);
+                if (!(userInfo.get().getSuspendedSituation())) {
+                    userInfo.get().setBookBorrowingSituation(true);
+                }
+                Response response = new Response("Book is delivered successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                throw new BadRequestException("There is no member with this id");
             }
-            Response response = new Response("Book is delivered successfully");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else{
+        } else {
             throw new BadRequestException("Book not found!");
         }
     }
-    public ResponseEntity<Response> extendBookDate(Long borrowingInfoId){
-        BorrowingInfo borrowingInfo = borrowingInfoRepository.findById(borrowingInfoId).get();
-        UserInfo userInfo  = userInfoRepository.findByUserId(borrowingInfo.getUser().getId()).get();
-        if(!(borrowingInfo.isReturnSituation()) && !(userInfo.getSuspendedSituation()) && !(borrowingInfo.isExtendDate())){
-            borrowingInfo.setExtendDate(true);
-            Response response = new Response("Your new delivery date has been extended for 5 days.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+
+    public ResponseEntity<Response> extendBookDate(Long borrowingInfoId) {
+        Optional<BorrowingInfo> borrowingInfo = borrowingInfoRepository.findById(borrowingInfoId);
+        if (borrowingInfo.isPresent()) {
+            Optional<UserInfo> userInfo = userInfoRepository.findByUserId(borrowingInfo.get().getUser().getId());
+            if (userInfo.isPresent()) {
+                if (!(borrowingInfo.get().isReturnSituation()) && !(userInfo.get().getSuspendedSituation()) && !(borrowingInfo.get().isExtendDate())) {
+                    borrowingInfo.get().setExtendDate(true);
+                    Response response = new Response("Your new delivery date has been extended for 5 days.");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    Response response = new Response("You cannot extend date!");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }
+            }
+            else{
+                throw new BadRequestException("There is no  member  with this id");
+            }
         }
         else{
-            Response response = new Response("You cannot extend date!");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            throw new BadRequestException("There is no book with this id");
         }
     }
+
+
     public void suspendMail(){
         List<BorrowingInfo> users = borrowingInfoRepository.findByReturnSituation(false);
         for(BorrowingInfo borrowingInfo : users){

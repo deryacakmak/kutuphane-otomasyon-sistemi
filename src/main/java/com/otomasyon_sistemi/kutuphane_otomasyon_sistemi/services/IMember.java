@@ -18,8 +18,8 @@ public interface IMember {
     Page<BorrowingInfo> getBorrowedBooks(Long id, int page, int pageSize);
     ResponseEntity<Response> deliverBook(Long id);
     ResponseEntity<Response> extendBookDate(Long bookInfoId);
-     void suspendMail();
-     void checkSuspend();
+    void suspendMail();
+    void checkSuspend();
 
 
 }

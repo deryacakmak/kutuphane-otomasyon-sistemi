@@ -1,6 +1,8 @@
 package com.otomasyon_sistemi.kutuphane_otomasyon_sistemi;
 
 
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.controller.AuthController;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.dto.SignUpRequest;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.EnumRole;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.Role;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.User;
@@ -17,68 +19,45 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.*;
 
-@DataJpaTest
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@RunWith(SpringRunner.class)
+@Transactional
 public class SignUpTest {
 
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
-    PasswordEncoder encoder;
+    private AuthController authController;
 
     @Autowired
-    RoleRepository roleRepository;
-
-
-    @Autowired
-    UserInfoRepository userInfoRepository;
+     private UserRepository userRepository;
 
     @Test
-    public void testSignUp(){
+    public void testSignUp() {
 
-        // Create new user's account
-        User user = new User();
-        user.setFirstName("derya");
-        user.setLastName("cakmak");
-        user.setUserIdentifier((long)1234);
-        user.setPassword(encoder.encode("12345"));
-        user.setEmail("deryacakmak6262@gmail.com");
-        Set<String> strRoles = new HashSet<>();
-        strRoles.add("member");
-        Set<Role> roles = new HashSet<>();
-        EnumRole allRoles[] = EnumRole.values();
+        SignUpRequest signUpRequest = new SignUpRequest();
 
-        for(String role: strRoles){
-            for (EnumRole enumRole : allRoles){
-                if(enumRole.label.equals(role)){
-                    Role adminRole = roleRepository.findByName(enumRole).get();
-                    roles.add(adminRole);
-                    break;
-                }
-            }
-        }
+        signUpRequest.setEmail("example@gmail.com");
+        signUpRequest.setFirstName("Derya");
+        signUpRequest.setLastName("Cakmak");
+        signUpRequest.setPassword("123456");
+        signUpRequest.setUserIdentifier((long)1234567);
+        Set<String> roles = new HashSet<>();
+        roles.add("member");
+        signUpRequest.setRole(roles);
+        authController.registerUser(signUpRequest);
 
-        user.setRole(roles);
-        userRepository.save(user);
+        assertEquals(userRepository.existsByEmail("example@gmail.com"),true); ;
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(user);
-        userInfo.setBookBorrowingSituation(true);
-        userInfo.setSuspendedSituation(false);
-        userRepository.save(user);
-        userInfoRepository.save(userInfo);
-
-        assertTrue(userRepository.existsByEmail("deryacakmak6262@gmail.com"));
-    }
     }
 
 
+
+}
 
 
 

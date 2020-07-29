@@ -28,7 +28,7 @@ public class AnnouncementServices implements IAnnouncementServices {
     private UserRepository userRepository;
 
 
-    public Announcement getAddAnnouncement(AddAnnouncementDto addAnnouncementDto) {
+    public Announcement addAnnouncement(AddAnnouncementDto addAnnouncementDto) {
         Announcement announcement = new Announcement();
         announcement.setContent(addAnnouncementDto.getContent());
         announcement.setTitle(addAnnouncementDto.getTitle());
@@ -44,15 +44,21 @@ public class AnnouncementServices implements IAnnouncementServices {
         }
     }
 
-    public List<Announcement> getDeleteAnnouncement(List<Long> ids) {
+    public List<Announcement> deleteAnnouncement(List<Long> ids) {
         List<Announcement> announcementList = new ArrayList<>();
-        for(Long id: ids){
-            announcementList.add(announcementRepository.findById(id).get());
+        if(!(ids.isEmpty())) {
+            for (Long id : ids) {
+                Optional<Announcement> announcement = announcementRepository.findById(id);
+                if(announcement.isPresent()){
+                    announcementList.add(announcement.get());
+                }
+            }
+            for (Announcement announcement : announcementList) {
+                announcementRepository.delete(announcement);
+            }
         }
-        for(Announcement announcement :announcementList) {
-            announcementRepository.delete(announcement);
-        }
-        return announcementList;
+            return announcementList;
+
     }
 
     public Page<Announcement> getAllAnnouncement(int page, int pageSize){

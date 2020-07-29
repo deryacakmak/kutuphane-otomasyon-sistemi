@@ -14,6 +14,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     void delete(Book book);
 
+    List<Book> findAll();
 
 
 }

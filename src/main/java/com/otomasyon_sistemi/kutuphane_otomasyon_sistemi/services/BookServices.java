@@ -57,15 +57,17 @@ public class BookServices implements IBookServices {
 
     public List<Book> bookDelete(List<Long> ids) {
         List<Book> bookList = new ArrayList<>();
-        for(Long id: ids){
-            Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(id);
-            if(bookInfo.isPresent()) {
-                bookInfoRepository.delete(bookInfo.get());
-                Optional<Book> book = bookRepository.findById(id);
-                bookList.add(book.get());
-            }
-            for(Book book: bookList){
-                bookRepository.delete(book);
+        if(!(ids.isEmpty())) {
+            for (Long id : ids) {
+                Optional<BookInfo> bookInfo = bookInfoRepository.findByBookId(id);
+                if (bookInfo.isPresent()) {
+                    bookInfoRepository.delete(bookInfo.get());
+                    Optional<Book> book = bookRepository.findById(id);
+                    bookList.add(book.get());
+                }
+                for (Book book : bookList) {
+                    bookRepository.delete(book);
+                }
             }
         }
         return bookList;

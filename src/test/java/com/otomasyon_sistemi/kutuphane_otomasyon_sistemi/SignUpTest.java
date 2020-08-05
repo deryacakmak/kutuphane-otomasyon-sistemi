@@ -10,6 +10,7 @@ import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.model.UserInfo;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.RoleRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserInfoRepository;
 import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.repository.UserRepository;
+import com.otomasyon_sistemi.kutuphane_otomasyon_sistemi.services.AuthService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class SignUpTest {
 
 
     @Autowired
-    private AuthController authController;
+    private AuthService authService;
 
     @Autowired
      private UserRepository userRepository;
@@ -49,7 +50,7 @@ public class SignUpTest {
         Set<String> roles = new HashSet<>();
         roles.add("member");
         signUpRequest.setRole(roles);
-        authController.registerUser(signUpRequest);
+        authService.signUp(signUpRequest);
 
         assertEquals(userRepository.existsByEmail("example@gmail.com"),true); ;
 
